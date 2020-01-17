@@ -43,9 +43,10 @@ class Router {
   }
 
   ///
-  void popUntil<T>(BuildContext context, RoutePredicate predicate, [dynamic result]) {
+  void popUntil<T>(BuildContext context, RoutePredicate predicate,
+      [dynamic result]) {
     Navigator.popUntil(context, (route) {
-      if(predicate(route)) {
+      if (predicate(route)) {
         (route.settings.arguments as Map<String, dynamic>)['result'] = result;
         return true;
       } else {
@@ -97,10 +98,10 @@ class Router {
     }
 
     //To work around the popUntil not being able to pass back a value we
-    //are using a hack which will utalize the arguments of the route to 
+    //are using a hack which will utalize the arguments of the route to
     //pass back a result.
     final result = await future;
-    if(result == null){
+    if (result == null) {
       final argumentMap = ModalRoute.of(context).settings.arguments as Map;
       return argumentMap['result'];
     } else {
@@ -115,8 +116,8 @@ class Router {
       return new MaterialPageRoute<Null>(
           settings: routeSettings,
           builder: (BuildContext context) {
-            return notFoundHandler.handlerFunc(
-                context, parameters, routeSettings.arguments);
+            return notFoundHandler.handlerFunc(context, parameters,
+                (routeSettings.arguments as Map<String, dynamic>)['arguments']);
           });
     };
     return creator(new RouteSettings(name: path), null);
@@ -163,7 +164,10 @@ class Router {
               fullscreenDialog: transition == TransitionType.nativeModal,
               builder: (BuildContext context) {
                 return handler.handlerFunc(
-                    context, parameters, routeSettings.arguments);
+                    context,
+                    parameters,
+                    (routeSettings.arguments
+                        as Map<String, dynamic>)['arguments']);
               });
         } else if (transition == TransitionType.cupertino ||
             transition == TransitionType.cupertinoFullScreenDialog) {
@@ -173,7 +177,10 @@ class Router {
                   transition == TransitionType.cupertinoFullScreenDialog,
               builder: (BuildContext context) {
                 return handler.handlerFunc(
-                    context, parameters, routeSettings.arguments);
+                    context,
+                    parameters,
+                    (routeSettings.arguments
+                        as Map<String, dynamic>)['arguments']);
               });
         } else {
           return new MaterialPageRoute<dynamic>(
@@ -181,7 +188,10 @@ class Router {
               fullscreenDialog: transition == TransitionType.nativeModal,
               builder: (BuildContext context) {
                 return handler.handlerFunc(
-                    context, parameters, routeSettings.arguments);
+                    context,
+                    parameters,
+                    (routeSettings.arguments
+                        as Map<String, dynamic>)['arguments']);
               });
         }
       } else {
@@ -195,8 +205,8 @@ class Router {
           settings: routeSettings,
           pageBuilder: (BuildContext context, Animation<double> animation,
               Animation<double> secondaryAnimation) {
-            return handler.handlerFunc(
-                context, parameters, routeSettings.arguments);
+            return handler.handlerFunc(context, parameters,
+                (routeSettings.arguments as Map<String, dynamic>)['arguments']);
           },
           transitionDuration: transitionDuration,
           transitionsBuilder: routeTransitionsBuilder,
