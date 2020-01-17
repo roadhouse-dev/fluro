@@ -37,7 +37,15 @@ class Router {
     return _routeTree.matchRoute(path);
   }
 
-  bool pop(BuildContext context) => Navigator.pop(context);
+  ///
+  bool pop<T>(BuildContext context, [dynamic result]) {
+    return Navigator.pop(context, result);
+  }
+
+  ///
+  void popUntil<T>(BuildContext context, RoutePredicate predicate) {
+    Navigator.popUntil(context, predicate);
+  }
 
   ///
   Future navigateTo(BuildContext context, String path,
@@ -51,7 +59,7 @@ class Router {
         transitionType: transition,
         transitionsBuilder: transitionBuilder,
         transitionDuration: transitionDuration,
-        routeSettings: RouteSettings(arguments: arguments));
+        routeSettings: RouteSettings(name: path, arguments: arguments));
     Route<dynamic> route = routeMatch.route;
     Completer completer = new Completer();
     Future future = completer.future;
