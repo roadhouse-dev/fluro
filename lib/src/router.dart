@@ -43,8 +43,15 @@ class Router {
   }
 
   ///
-  void popUntil<T>(BuildContext context, RoutePredicate predicate) {
-    Navigator.popUntil(context, predicate);
+  void popUntil<T>(BuildContext context, RoutePredicate predicate, [dynamic result]) {
+    Navigator.popUntil(context, (route) {
+      if(predicate(route)) {
+        (route.settings.arguments as Map<String, dynamic>)['result'] = result;
+        return true;
+      } else {
+        return false;
+      }
+    });
   }
 
   ///
@@ -54,12 +61,15 @@ class Router {
       TransitionType transition,
       Duration transitionDuration = const Duration(milliseconds: 250),
       RouteTransitionsBuilder transitionBuilder,
-      Object arguments}) {
+      Object arguments}) async {
+    final argumentsMap = {
+      'arguments': arguments,
+    };
     RouteMatch routeMatch = matchRoute(context, path,
         transitionType: transition,
         transitionsBuilder: transitionBuilder,
         transitionDuration: transitionDuration,
-        routeSettings: RouteSettings(name: path, arguments: arguments));
+        routeSettings: RouteSettings(name: path, arguments: argumentsMap));
     Route<dynamic> route = routeMatch.route;
     Completer completer = new Completer();
     Future future = completer.future;
@@ -86,7 +96,16 @@ class Router {
       }
     }
 
-    return future;
+    //To work around the popUntil not being able to pass back a value we
+    //are using a hack which will utalize the arguments of the route to 
+    //pass back a result.
+    final result = await future;
+    if(result == null){
+      final argumentMap = ModalRoute.of(context).settings.arguments as Map;
+      return argumentMap['result'];
+    } else {
+      return result;
+    }
   }
 
   ///
@@ -128,7 +147,8 @@ class Router {
     Map<String, List<String>> parameters =
         match?.parameters ?? <String, List<String>>{};
     if (handler.type == HandlerType.function) {
-      handler.handlerFunc(buildContext, parameters, routeSettings.arguments);
+      handler.handlerFunc(buildContext, parameters,
+          (routeSettings.arguments as Map<String, dynamic>)['arguments']);
       return new RouteMatch(matchType: RouteMatchType.nonVisual);
     }
 
