@@ -101,11 +101,14 @@ class Router {
     //are using a hack which will utalize the arguments of the route to
     //pass back a result.
     final result = await future;
-    if (result == null) {
-      final argumentMap = ModalRoute.of(context).settings.arguments as Map;
+     final argumentMap = ModalRoute.of(context).settings.arguments as Map;
+
+   if (result != null) {
+      return result;
+    } else if (argumentMap != null) {
       return argumentMap['result'];
     } else {
-      return result;
+      return null;
     }
   }
 
