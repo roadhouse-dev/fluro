@@ -38,8 +38,8 @@ class Router {
   }
 
   ///
-  bool pop<T>(BuildContext context, [dynamic result]) {
-    return Navigator.pop(context, result);
+  void pop<T>(BuildContext context, [dynamic result]) {
+    Navigator.pop(context, result);
   }
 
   ///
